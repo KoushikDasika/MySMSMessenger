@@ -20,7 +20,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: mongodb://cityhive:password@mongo:27017/
+      DATABASE_URL: mongodb://cityhive:password@mongo:27017/my_sms_messenger_development
+      TEST_DATABASE_URL: mongodb://cityhive:password@mongo:27017/my_sms_messenger_test
       RAILS_ENV: development
       RAILS_MAX_THREADS: 10
     depends_on:
