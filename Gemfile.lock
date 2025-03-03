@@ -107,6 +107,11 @@ GEM
     drb (2.2.1)
     ed25519 (1.3.0)
     erubi (1.13.1)
+    factory_bot (6.5.1)
+      activesupport (>= 6.1.0)
+    factory_bot_rails (6.4.4)
+      factory_bot (~> 6.5)
+      railties (>= 5.0.0)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
     globalid (1.2.1)
@@ -275,7 +280,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
-    rubocop-rails (2.30.2)
+    rubocop-rails (2.30.3)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
@@ -334,6 +339,7 @@ DEPENDENCIES
   brakeman
   capybara
   debug
+  factory_bot_rails (~> 6.4.4)
   faker (~> 3.5.1)
   importmap-rails
   jbuilder
@@ -350,4 +356,4 @@ DEPENDENCIES
   web-console
 
 BUNDLED WITH
-   2.5.22
+   2.6.2

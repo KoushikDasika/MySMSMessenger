@@ -30,6 +30,7 @@ module MySmsMessenger
     config.generators do |g|
       g.orm :mongoid
       g.test_framework :rspec
+      g.factory_bot dir: "spec/factories"
     end
 
     # Configuration for the application, engines, and railties goes here.
