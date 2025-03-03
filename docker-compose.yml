@@ -5,8 +5,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: cityhive
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: admin
+    command: mongod --auth
     volumes:
-      - mongo_data:/data/db
+      - ./mongo_data:/data/db
     ports:
       - "27017:27017"
     restart: always
@@ -20,8 +21,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: mongodb://cityhive:password@mongo:27017/my_sms_messenger_development
-      TEST_DATABASE_URL: mongodb://cityhive:password@mongo:27017/my_sms_messenger_test
+      DATABASE_URL: mongodb://cityhive:password@mongo:27017/my_sms_messenger_development?directConnection=true&authSource=admin&authMechanism=SCRAM-SHA-1
+      TEST_DATABASE_URL: mongodb://cityhive:password@mongo:27017/my_sms_messenger_test?directConnection=true&authSource=admin&authMechanism=SCRAM-SHA-1
       RAILS_ENV: development
       RAILS_MAX_THREADS: 10
     depends_on:

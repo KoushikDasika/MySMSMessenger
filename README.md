@@ -1,24 +1,34 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This README documents the steps necessary to get the application up and running.
 
-Things you may want to cover:
+## Ruby Version
+* 3.3.6
 
-* Ruby version
+## System Dependencies
+* Docker Compose for Development
 
-* System dependencies
+## Database Creation and Initialization
+```bash
+bundle exec web rails db:setup
+```
 
-* Configuration
+## Development Environment
+This project uses Docker for the development environment. To set up the environment, run:
 
-* Database creation
+```bash
+docker-compose up
+```
 
-* Database initialization
+## Running Tests
+To run the test suite, use the following command:
 
-* How to run the test suite
+```bash
+docker-compose run web bundle exec rspec
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+## Tech Decisions
+<!-- Describe the technical decisions made during the development of this project. -->
 
-* Deployment instructions
-
-* ...
+## Deployment Instructions
+Instructions for deploying the application.
