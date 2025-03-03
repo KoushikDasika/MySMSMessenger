@@ -26,10 +26,19 @@ MESSAGES_PER_USER = 5
 # Seed implementation follows...
 
 # Create users
-NUM_USERS.times do |i|
-  User.create(
-    name: Faker::Name.name,
-    email: Faker::Internet.email,
-    phone_number: Faker::PhoneNumber.cell_phone_in_e164,
-  )
-end
+users =
+  NUM_USERS.times.map do |i|
+    User.create(
+      name: Faker::Name.name,
+      email: Faker::Internet.email,
+      phone_number: Faker::PhoneNumber.cell_phone_in_e164,
+    )
+  end
+
+  # Create messages
+  users.each do |user|
+    NUM_USERS.times.map do |i|
+      recipient = users.sample()
+      Message.create(sender: user, recipient: recipient, body: Faker::Lorem.sentence)
+    end
+  end
