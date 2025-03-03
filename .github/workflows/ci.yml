@@ -67,7 +67,7 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: mongodb://mongodb:27017/my_sms_messenger_test
-        run: bin/rails db:test:prepare rspec
+        run: bin/rails db:test:prepare && bin/rspec
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
