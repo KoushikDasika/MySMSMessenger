@@ -1,15 +1,13 @@
-# Use Ruby 3.3.6 as the base image
-FROM ruby:3.3.6-slim
+# Use Ruby 3.4.2 as the base image
+FROM ruby:3.4.2
 
 # Install essential Linux packages
 RUN apt-get update -qq && apt-get install -y \
     build-essential \
     curl \
     git \
-    libpq-dev \
     libjemalloc2 \
     pkg-config \
-    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure jemalloc

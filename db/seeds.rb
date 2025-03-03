@@ -31,7 +31,7 @@ users =
     User.create(
       name: Faker::Name.name,
       email: Faker::Internet.email,
-      phone_number: Faker::PhoneNumber.cell_phone_in_e164,
+      phone_number: Faker::PhoneNumber.cell_phone_in_e164
     )
   end
 
