@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Twilio::SendSmsService do
+RSpec.describe Apis::Twilio::SendSmsService do
   before(:each) do
     @to_number = '+15551234567'
     @from_number = '+15559876543'
@@ -14,15 +14,18 @@ RSpec.describe Twilio::SendSmsService do
   end
 
   describe '#call' do
-    it 'sends an SMS with the correct parameters' do
+    it 'sends an Sms with the correct parameters' do
       message_response = OpenStruct.new(
+        to: @to_number,
+        from: @from_number,
+        body: @message_body,
         sid: 'SM123456',
         error_code: nil,
         error_message: nil
       )
       allow(@messages).to receive(:create).and_return(message_response)
 
-      service = Twilio::SendSmsService.new(
+      service = Apis::Twilio::SendSmsService.new(
         to: @to_number,
         from: @from_number,
         body: @message_body
@@ -47,7 +50,7 @@ RSpec.describe Twilio::SendSmsService do
       )
       allow(@messages).to receive(:create).and_return(message_response)
 
-      service = Twilio::SendSMSService.new(
+      service = Apis::Twilio::SendSmsService.new(
         to: @to_number,
         from: @from_number,
         body: @message_body
@@ -55,16 +58,24 @@ RSpec.describe Twilio::SendSmsService do
 
       result = service.call
 
-      expect(result.success?).to eq(true)
-      expect(result.message_sid).to eq('SM123456')
-      expect(result.error_code).to be_nil
-      expect(result.error_message).to be_nil
+      expect(result.to_h).to eq({
+        success: true,
+        message_sid: 'SM123456',
+        error_code: nil,
+        error_message: nil,
+        full_error_message: nil
+      })
     end
 
     it 'returns failure response when Twilio returns an error' do
       error_response = OpenStruct.new(
         status_code: 400,
-        body: { code: 21211, message: 'Invalid phone number' }.to_json
+        body: {
+          'code' => 21211,
+          'message' => 'Invalid phone number',
+          'more_info' => nil,
+          'details' => nil
+        }
       )
 
       allow(@messages).to receive(:create).and_raise(
@@ -74,7 +85,7 @@ RSpec.describe Twilio::SendSmsService do
         )
       )
 
-      service = Twilio::SendSMSService.new(
+      service = Apis::Twilio::SendSmsService.new(
         to: @to_number,
         from: @from_number,
         body: @message_body
@@ -82,16 +93,19 @@ RSpec.describe Twilio::SendSmsService do
 
       result = service.call
 
-      expect(result.success?).to eq(false)
-      expect(result.message_sid).to be_nil
-      expect(result.error_code).to eq(21211)
-      expect(result.error_message).to eq('Invalid phone number')
+      expect(result.to_h).to eq({
+        success: false,
+        message_sid: nil,
+        error_code: 21211,
+        error_message: 'Invalid phone number',
+        full_error_message: "[HTTP 400] 21211 : Error 21211\nInvalid phone number\n\n"
+      })
     end
 
     it 'returns failure response when unexpected error occurs' do
       allow(@messages).to receive(:create).and_raise(StandardError.new('Unexpected error'))
 
-      service = Twilio::SendSMSService.new(
+      service = Apis::Twilio::SendSmsService.new(
         to: @to_number,
         from: @from_number,
         body: @message_body
@@ -99,17 +113,20 @@ RSpec.describe Twilio::SendSmsService do
 
       result = service.call
 
-      expect(result.success?).to eq(false)
-      expect(result.message_sid).to be_nil
-      expect(result.error_code).to be_nil
-      expect(result.error_message).to eq('Unexpected error')
+      expect(result.to_h).to eq({
+        success: false,
+        message_sid: nil,
+        error_code: nil,
+        error_message: 'Unexpected error',
+        full_error_message: nil
+      })
     end
   end
 
   describe 'parameter validation' do
     it 'raises error when "to" parameter is missing' do
       expect {
-        Twilio::SendSMSService.new(
+        Apis::Twilio::SendSmsService.new(
           from: @from_number,
           body: @message_body
         )
@@ -118,7 +135,7 @@ RSpec.describe Twilio::SendSmsService do
 
     it 'raises error when "from" parameter is missing' do
       expect {
-        Twilio::SendSMSService.new(
+        Apis::Twilio::SendSmsService.new(
           to: @to_number,
           body: @message_body
         )
@@ -127,7 +144,7 @@ RSpec.describe Twilio::SendSmsService do
 
     it 'raises error when "body" parameter is missing' do
       expect {
-        Twilio::SendSMSService.new(
+        Apis::Twilio::SendSmsService.new(
           to: @to_number,
           from: @from_number
         )
@@ -143,7 +160,7 @@ RSpec.describe Twilio::SendSmsService do
       expect(Twilio::REST::Client).to receive(:new)
         .with('test_sid', 'test_token')
 
-      service = Twilio::SendSMSService.new(
+      service = Apis::Twilio::SendSmsService.new(
         to: @to_number,
         from: @from_number,
         body: @message_body
