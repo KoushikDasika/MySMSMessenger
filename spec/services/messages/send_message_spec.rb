@@ -67,6 +67,35 @@ RSpec.describe Messages::SendMessage do
         expect(message.sender.phone_number).to eq(from_number)
       end
     end
+
+    context 'when sending SMS' do
+      it 'calls Twilio service with correct parameters' do
+        sms_service = instance_double(Apis::Twilio::SendSmsService)
+        sms_response = instance_double(
+          Apis::Twilio::SendSmsServiceResponse,
+          success: true,
+          message_sid: 'SM123',
+          error_code: nil,
+          error_message: nil
+        )
+
+        allow(Apis::Twilio::SendSmsService).to receive(:new)
+          .with(to: to_number, from: from_number, body: message_body)
+          .and_return(sms_service)
+        allow(sms_service).to receive(:call).and_return(sms_response)
+
+        service = Messages::SendMessage.new(
+          to: to_number,
+          from: from_number,
+          body: message_body
+        )
+
+        result = service.call
+
+        expect(sms_service).to have_received(:call)
+        expect(result.sms_response).to eq(sms_response)
+      end
+    end
   end
 
   describe 'parameter validation' do
