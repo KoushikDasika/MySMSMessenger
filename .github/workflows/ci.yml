@@ -66,18 +66,6 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
-      - name: Wait for MongoDB to be healthy
-        run: |
-          echo "Waiting for MongoDB to be healthy..."
-          for i in {1..10}; do
-            if mongo --eval 'db.runCommand({ ping: 1 })'; then
-              echo "MongoDB is healthy!"
-              break
-            fi
-            echo "MongoDB is not healthy yet. Waiting..."
-            sleep 5
-          done
-
       - name: Run tests
         env:
           RAILS_ENV: test
