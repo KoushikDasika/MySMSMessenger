@@ -34,3 +34,5 @@
 /config/master.key
 mongo_data/
 /config/credentials/test.key
+
+/config/credentials/development.key
