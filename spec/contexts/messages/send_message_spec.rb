@@ -4,67 +4,53 @@ RSpec.describe Messages::SendMessage do
   let(:to_number) { Faker::PhoneNumber.cell_phone_in_e164 }
   let(:from_number) { Faker::PhoneNumber.cell_phone_in_e164 }
   let(:message_body) { 'Test message' }
+  let(:session_id) { SecureRandom.uuid }
+
+  before(:each) do
+    @twilio_client = Twilio::REST::Client.new
+    @messages = @twilio_client.messages
+
+    allow(Twilio::REST::Client).to receive(:new).and_return(@twilio_client)
+    allow(@twilio_client).to receive(:messages).and_return(@messages)
+  end
 
   describe '#call' do
-    context 'when creating message record with users' do
-      it 'creates new users if they do not exist' do
-        service = Messages::SendMessage.new(
-          to: to_number,
-          from: from_number,
-          body: message_body
-        )
-
-        expect {
-          service.call
-        }.to change { User.count }.by(2)
-
-        recipient = User.find_by(phone_number: to_number)
-        sender = User.find_by(phone_number: from_number)
-
-        expect(recipient).to be_present
-        expect(sender).to be_present
-      end
-
-      it 'reuses existing users if they exist' do
-        # Create users before the test
-        recipient = User.create!(phone_number: to_number)
-        sender = User.create!(phone_number: from_number)
+    context 'when creating message record with session' do
+      it 'creates a message with session_id' do
+        sender = FactoryBot.create(:user)
+        recipient = FactoryBot.create(:user)
 
         service = Messages::SendMessage.new(
-          to: to_number,
-          from: from_number,
-          body: message_body
+          to: recipient.phone_number,
+          from: sender.phone_number,
+          body: message_body,
+          session_id: session_id
         )
 
-        expect {
-          service.call
-        }.not_to change(User, :count)
+        response = service.call
 
-        message = Message.last
-        expect(message.recipient).to eq(recipient)
-        expect(message.sender).to eq(sender)
-      end
+        message = Message.find(service.message.id)
 
-      it 'creates a message with associated users' do
-        service = Messages::SendMessage.new(
-          to: to_number,
-          from: from_number,
-          body: message_body
-        )
-
-        expect {
-          service.call
-        }.to change(Message, :count).by(1)
-
-        message = Message.last
         expect(message.attributes).to include(
-          'to' => to_number,
-          'from' => from_number,
+          'to' => recipient.phone_number,
+          'from' => sender.phone_number,
           'body' => message_body,
           'success' => false
         )
-        expect(message.recipient.phone_number).to eq(to_number)
-        expect(message.sender.phone_number).to eq(from_number)
+      end
+
+      it 'creates or updates user with session_id' do
+        service = Messages::SendMessage.new(
+          to: to_number,
+          from: from_number,
+          body: message_body,
+          session_id: session_id
+        )
+
+        service.call
+
+        user = User.find_by(phone_number: from_number)
+        expect(user.session_id).to eq(session_id)
       end
     end
 
@@ -88,7 +74,8 @@ RSpec.describe Messages::SendMessage do
         service = Messages::SendMessage.new(
           to: to_number,
           from: from_number,
-          body: message_body
+          body: message_body,
+          session_id: session_id
         )
 
         result = service.call
@@ -117,7 +104,8 @@ RSpec.describe Messages::SendMessage do
         service = Messages::SendMessage.new(
           to: to_number,
           from: from_number,
-          body: message_body
+          body: message_body,
+          session_id: session_id
         )
 
         result = service.call
@@ -150,7 +138,9 @@ RSpec.describe Messages::SendMessage do
         service = Messages::SendMessage.new(
           to: to_number,
           from: from_number,
-          body: message_body
+          body: message_body,
+          session_id: session_id
+
         )
 
         result = service.call
@@ -163,6 +153,67 @@ RSpec.describe Messages::SendMessage do
         )
         expect(message.sent_at).to be_present
       end
+    end
+
+    it 'sends an Sms with the correct parameters' do
+      message_response = OpenStruct.new(
+        to: to_number,
+        from: from_number,
+        body: message_body,
+        sid: 'SM123456',
+        error_code: nil,
+        error_message: nil
+      )
+      allow(@messages).to receive(:create).and_return(message_response)
+
+      service = Messages::SendMessage.new(
+        to: to_number,
+        from: from_number,
+        body: message_body,
+        session_id: session_id
+      )
+
+      expect(@messages).to receive(:create).with(
+        to: to_number,
+        from: from_number,
+        body: message_body
+      )
+
+      result = service.call
+      expect(result.message.attributes).to include({
+        "body" => message_body,
+        "from" => from_number,
+        "to" => to_number,
+      })
+    end
+
+    it 'returns success response when SMS is sent' do
+      message_response = OpenStruct.new(
+        sid: 'SM123456',
+        error_code: nil,
+        error_message: nil
+      )
+      allow(@messages).to receive(:create).and_return(message_response)
+
+      service = Messages::SendMessage.new(
+        to: to_number,
+        from: from_number,
+        body: message_body,
+        session_id: session_id
+      )
+
+      result = service.call
+
+      expect(result.to_h).to include(
+        success: true,
+        error_code: nil,
+        error_message: nil
+      )
+      expect(result.message.attributes).to include({
+        "body" => message_body,
+        "from" => from_number,
+        "to" => to_number,
+      })
     end
   end
 
@@ -190,6 +241,16 @@ RSpec.describe Messages::SendMessage do
         Messages::SendMessage.new(
           to: to_number,
           from: from_number
+        )
+      }.to raise_error(ArgumentError)
+    end
+
+    it 'raises error when session_id parameter is missing' do
+      expect {
+        Messages::SendMessage.new(
+          to: to_number,
+          from: from_number,
+          body: message_body
         )
       }.to raise_error(ArgumentError)
     end

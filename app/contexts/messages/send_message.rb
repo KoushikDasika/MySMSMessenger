@@ -1,11 +1,12 @@
 module Messages
   class SendMessage
-    attr_accessor :to, :from, :body, :sms_response, :message
+    attr_accessor :to, :from, :body, :session_id, :sms_response, :message
 
-    def initialize(to:, from:, body:)
+    def initialize(to:, from:, body:, session_id:)
       @to = to
       @from = from
       @body = body
+      @session_id = session_id
     end
 
     def call
@@ -21,16 +22,16 @@ module Messages
         sms_response: sms_response
       )
     rescue Mongoid::Errors::Validations => e
-      handle_error("validation_error", e.message)
+      handle_error("validation_error", e)
     rescue StandardError => e
-      handle_error(nil, e.message)
+      handle_error(nil, e)
     end
 
     private
 
     def create_message_with_users(to, from, body)
-      recipient = find_or_create_user(to)
-      sender = find_or_create_user(from)
+      recipient = User.find_or_create_by(phone_number: to)
+      sender = User.find_or_create_for_session(phone_number: from, session_id: @session_id)
 
       Message.create!(
         to: to,
@@ -40,10 +41,6 @@ module Messages
         recipient: recipient,
         sender: sender
       )
-    end
-
-    def find_or_create_user(phone_number)
-      User.find_or_create_by(phone_number: phone_number)
     end
 
     def send_sms(to, from, body)
@@ -65,17 +62,16 @@ module Messages
         message
     end
 
-    def handle_error(error_code, error_message)
+    def handle_error(error_code, error)
       SendMessageResponse.new(
         success: false,
-        message: nil,
         error_code: error_code,
-        error_message: error_message,
-        sms_response: nil
+        error_message: error.message,
+        backtrace: error.backtrace
       )
     end
   end
 
-  class SendMessageResponse < Data.define(:success, :message, :error_code, :error_message, :sms_response)
+  class SendMessageResponse < Struct.new(:success, :message, :error_code, :error_message, :sms_response, :backtrace)
   end
 end
