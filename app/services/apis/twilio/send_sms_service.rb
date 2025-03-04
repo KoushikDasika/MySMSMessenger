@@ -11,7 +11,7 @@ module Apis
         client = create_client
 
         # https://github.com/twilio/twilio-ruby/blob/main/lib/twilio-ruby/rest/api/v2010/account/message.rb#L61
-        output = client.messages.create(
+        response = client.messages.create(
           from: @from,
           to: @to,
           body: @body
@@ -19,7 +19,7 @@ module Apis
 
         SendSmsServiceResponse.new(
           success: true,
-          message_sid: output.sid,
+          message_sid: response.sid,
           error_code: nil,
           error_message: nil,
           full_error_message: nil
