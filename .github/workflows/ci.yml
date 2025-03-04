@@ -38,9 +38,10 @@ jobs:
         run: bin/rubocop -f github
 
   test:
-    runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
+    runs-on: ubuntu-latest
     services:
       mongo:
         image: mongo:8.0
