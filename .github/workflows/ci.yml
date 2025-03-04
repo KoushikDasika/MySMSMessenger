@@ -42,6 +42,10 @@ jobs:
     services:
       mongo:
         image: mongo:8.0
+        env:
+          MONGO_INITDB_ROOT_USERNAME: test
+          MONGO_INITDB_ROOT_PASSWORD: password
+          MONGO_INITDB_DATABASE: my_sms_messenger_test
         options:
           --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh --quiet"
           --health-interval 30s
@@ -66,7 +70,7 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
-          TEST_DATABASE_URL: mongodb://mongodb:27017/my_sms_messenger_test?directConnection=true&authSource=admin&authMechanism=SCRAM-SHA-1
+          TEST_DATABASE_URL: mongodb://test:password@mongodb:27017/my_sms_messenger_test?directConnection=true&authSource=admin&authMechanism=SCRAM-SHA-1
         run: bin/rails db:test:prepare && bin/rspec
 
       - name: Keep screenshots from failed system tests
