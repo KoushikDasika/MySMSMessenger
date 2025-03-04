@@ -22,22 +22,6 @@ jobs:
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
-  scan_js:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: bin/importmap audit
-
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -55,13 +39,17 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8.0
+        options:
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh --quiet"
+          --health-interval 30s
+          --health-timeout 5s
+          --health-retries 20
+        ports:
+          - 27017:27017
 
-    # services:
-    #  redis:
-    #    image: redis
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git pkg-config google-chrome-stable
@@ -78,8 +66,8 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+          TEST_DATABASE_URL: mongodb://mongodb:27017/my_sms_messenger_test?directConnection=true&authSource=admin&authMechanism=SCRAM-SHA-1
+        run: bin/rails db:test:prepare && bin/rspec
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
