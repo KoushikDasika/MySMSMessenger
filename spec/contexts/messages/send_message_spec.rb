@@ -71,6 +71,36 @@ RSpec.describe Messages::SendMessage do
     context 'when sending SMS' do
       it 'calls Twilio service with correct parameters' do
         sms_service = instance_double(Apis::Twilio::SendSmsService)
+        sms_response =
+          Apis::Twilio::SendSmsServiceResponse.new(
+            success: true,
+            message_sid: 'SM123',
+            error_code: nil,
+            error_message: nil,
+            full_error_message: nil
+          )
+
+        allow(Apis::Twilio::SendSmsService).to receive(:new)
+          .with(to: to_number, from: from_number, body: message_body)
+          .and_return(sms_service)
+        allow(sms_service).to receive(:call).and_return(sms_response)
+
+        service = Messages::SendMessage.new(
+          to: to_number,
+          from: from_number,
+          body: message_body
+        )
+
+        result = service.call
+
+        expect(sms_service).to have_received(:call)
+        expect(result.sms_response).to eq(sms_response)
+      end
+    end
+
+    context 'when updating message with SMS result' do
+      it 'updates message with successful SMS response' do
+        sms_service = instance_double(Apis::Twilio::SendSmsService)
         sms_response = instance_double(
           Apis::Twilio::SendSmsServiceResponse,
           success: true,
@@ -91,9 +121,47 @@ RSpec.describe Messages::SendMessage do
         )
 
         result = service.call
+        message = result.message
 
-        expect(sms_service).to have_received(:call)
-        expect(result.sms_response).to eq(sms_response)
+        expect(message.attributes).to include(
+          'success' => true,
+          'message_sid' => 'SM123',
+          "body" => "Test message",
+          'error_message' => nil
+        )
+        expect(message.sent_at).to be_present
+      end
+
+      it 'updates message with failed SMS response' do
+        sms_service = instance_double(Apis::Twilio::SendSmsService)
+        sms_response = instance_double(
+          Apis::Twilio::SendSmsServiceResponse,
+          success: false,
+          message_sid: nil,
+          error_code: '21211',
+          error_message: 'Invalid phone number'
+        )
+
+        allow(Apis::Twilio::SendSmsService).to receive(:new)
+          .with(to: to_number, from: from_number, body: message_body)
+          .and_return(sms_service)
+        allow(sms_service).to receive(:call).and_return(sms_response)
+
+        service = Messages::SendMessage.new(
+          to: to_number,
+          from: from_number,
+          body: message_body
+        )
+
+        result = service.call
+        message = result.message
+
+        expect(message.attributes).to include(
+          'success' => false,
+          'message_sid' => nil,
+          'error_message' => 'Invalid phone number'
+        )
+        expect(message.sent_at).to be_present
       end
     end
   end

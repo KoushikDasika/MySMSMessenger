@@ -5,7 +5,7 @@ class Message
   field :success, type: Boolean
   field :sent_at, type: DateTime
   field :message_sid, type: String
-  field :error, type: String
+  field :error_message, type: String
   field :from, type: String
   field :to, type: String
 

@@ -37,8 +37,6 @@ RSpec.describe Apis::Twilio::SendSmsService do
         body: @message_body
       )
 
-      puts "here"
-
       result = service.call
     end
 
@@ -63,7 +61,7 @@ RSpec.describe Apis::Twilio::SendSmsService do
         message_sid: 'SM123456',
         error_code: nil,
         error_message: nil,
-        full_error_message: nil
+        full_error_message: nil,
       })
     end
 
@@ -74,7 +72,7 @@ RSpec.describe Apis::Twilio::SendSmsService do
           'code' => 21211,
           'message' => 'Invalid phone number',
           'more_info' => nil,
-          'details' => nil
+          'details' => nil,
         }
       )
 
@@ -98,7 +96,7 @@ RSpec.describe Apis::Twilio::SendSmsService do
         message_sid: nil,
         error_code: 21211,
         error_message: 'Invalid phone number',
-        full_error_message: "[HTTP 400] 21211 : Error 21211\nInvalid phone number\n\n"
+        full_error_message: "[HTTP 400] 21211 : Error 21211\nInvalid phone number\n\n",
       })
     end
 
@@ -118,7 +116,7 @@ RSpec.describe Apis::Twilio::SendSmsService do
         message_sid: nil,
         error_code: nil,
         error_message: 'Unexpected error',
-        full_error_message: nil
+        full_error_message: nil,
       })
     end
   end

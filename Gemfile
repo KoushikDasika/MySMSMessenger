@@ -42,6 +42,8 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
+  gem "rubocop-shopify", require: false
+
   gem "faker", "~> 3.5.1"
 end
 

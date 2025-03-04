@@ -300,6 +300,8 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
+    rubocop-shopify (2.15.1)
+      rubocop (~> 1.51)
     ruby-progressbar (1.13.0)
     rubyzip (2.4.1)
     securerandom (0.4.1)
@@ -366,6 +368,7 @@ DEPENDENCIES
   rails (~> 8.0.1)
   rspec-rails (~> 7.0.0)
   rubocop-rails-omakase
+  rubocop-shopify
   selenium-webdriver
   thruster
   twilio-ruby (~> 7.4.5)

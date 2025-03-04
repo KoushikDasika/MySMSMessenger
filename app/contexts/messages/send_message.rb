@@ -1,6 +1,6 @@
 module Messages
   class SendMessage
-    attr_accessor :to, :from, :body, :sms_response
+    attr_accessor :to, :from, :body, :sms_response, :message
 
     def initialize(to:, from:, body:)
       @to = to
@@ -9,15 +9,16 @@ module Messages
     end
 
     def call
-      create_message_with_users
-      @sms_response = send_sms
+      @message = create_message_with_users(@to, @from, @body)
+      @sms_response = send_sms(@to, @from, @body)
+      @message = update_message_with_sms_result(message, sms_response)
 
       SendMessageResponse.new(
         success: true,
         message: @message,
         error_code: nil,
         error_message: nil,
-        sms_response: @sms_response
+        sms_response: sms_response
       )
     rescue Mongoid::Errors::Validations => e
       handle_error("validation_error", e.message)
@@ -27,14 +28,14 @@ module Messages
 
     private
 
-    def create_message_with_users
-      recipient = find_or_create_user(@to)
-      sender = find_or_create_user(@from)
+    def create_message_with_users(to, from, body)
+      recipient = find_or_create_user(to)
+      sender = find_or_create_user(from)
 
-      @message = Message.create!(
-        to: @to,
-        from: @from,
-        body: @body,
+      Message.create!(
+        to: to,
+        from: from,
+        body: body,
         success: false,
         recipient: recipient,
         sender: sender
@@ -45,12 +46,23 @@ module Messages
       User.find_or_create_by(phone_number: phone_number)
     end
 
-    def send_sms
+    def send_sms(to, from, body)
       Apis::Twilio::SendSmsService.new(
-        to: @to,
-        from: @from,
-        body: @body
+        to: to,
+        from: from,
+        body: body
       ).call
+    end
+
+    def update_message_with_sms_result(message, sms_response)
+        message.update!(
+          success: sms_response.success,
+          message_sid: sms_response.message_sid,
+          error_message: sms_response.error_message,
+          sent_at: Time.current
+        )
+
+        message
     end
 
     def handle_error(error_code, error_message)
