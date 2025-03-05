@@ -20,19 +20,18 @@ WORKDIR /app
 RUN gem install rails -v 8.0.1
 
 # Copy Gemfile and Gemfile.lock
-COPY Gemfile Gemfile.lock ./
+COPY api/Gemfile api/Gemfile.lock ./
 
 # Install dependencies
 RUN bundle install
 
 # Copy the rest of the application
-COPY . .
+COPY api/ .
 
 # Add a script to be executed every time the container starts
-COPY bin/docker-entrypoint /usr/bin/
+COPY api/bin/docker-entrypoint /usr/bin/
 RUN chmod +x /usr/bin/docker-entrypoint
-ENTRYPOINT ["docker-entrypoint"]
 
-# Configure the main process to run when running the image
 EXPOSE 3000
-CMD ["rails", "server", "-b", "0.0.0.0"]
+
+ENTRYPOINT ["docker-entrypoint"]
