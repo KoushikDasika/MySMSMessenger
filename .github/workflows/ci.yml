@@ -44,9 +44,10 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+          working-directory: ./api
 
       - name: Lint code for consistent style
-        run: bin/rubocop -f github
+        run: api/bin/rubocop -f github
 
   test:
     permissions:
