@@ -1,0 +1,17 @@
+<div class="flex flex-col">
+  <h2 class="text-xl font-semibold mb-4">New Message</h2>
+  <form (ngSubmit)="onSubmit()">
+    <div class="mb-4">
+      <label for="phoneNumber" class="block mb-2">Phone Number</label>
+      <input type="text" id="phoneNumber" [(ngModel)]="message.phoneNumber" name="phoneNumber" class="w-full p-2 border border-gray-300 rounded" required>
+    </div>
+    <div class="mb-4">
+      <label for="message" class="block mb-2">Message</label>
+      <textarea id="message" [(ngModel)]="message.message" name="message" class="w-full p-2 border border-gray-300 rounded" rows="6" required></textarea>
+    </div>
+    <div class="flex justify-between">
+      <button type="button" class="bg-white text-black px-4 py-2 rounded-full" (click)="clearForm()">Clear</button>
+      <button type="submit" class="bg-black text-white px-4 py-2 rounded-full" [disabled]="!message.phoneNumber || !message.message" (click)="onSubmit()">Submit</button>      
+    </div>
+  </form>
+</div>
