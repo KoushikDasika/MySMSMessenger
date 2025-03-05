@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   def current_user
     if cookies[:session_id].nil?
       # hardcoding the phone number for testing/dev purposes
-      # In the real world, you'd use the phone number from the user's profile
+      # In the real world, you'd login and use the phone number from the user's profile
       # or throw an error if no phone number is found
       User.find_or_create_for_session(
         phone_number: Rails.application.credentials.twilio[:phone_number],
