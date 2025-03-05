@@ -16,7 +16,6 @@ services:
     build:
       context: .
       dockerfile: docker/development/DockerfileFrontend
-    command: sleep infinity
     volumes:
       - ./frontend:/app
     ports:
