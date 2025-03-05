@@ -10,7 +10,7 @@ RSpec.describe 'Messages', type: :request do
       .and_return({ phone_number: twilio_number })
   end
 
-  describe 'GET /messages' do
+  describe 'GET /api/messages' do
     before do
       # Set session cookie
       cookies[:session_id] = session_id
@@ -44,7 +44,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'returns messages for the current session' do
-      get '/messages'
+      get '/api/messages'
 
       expect(response).to have_http_status(:success)
 
@@ -58,7 +58,7 @@ RSpec.describe 'Messages', type: :request do
     it 'returns 404 if no user exists' do
       cookies[:session_id] = SecureRandom.uuid
 
-      get '/messages'
+      get '/api/messages'
 
       expect(cookies[:session_id]).to be_present
       expect(response).to have_http_status(:ok)
@@ -66,7 +66,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'orders messages by created_at asc' do
-      get '/messages'
+      get '/api/messages'
 
       json_response = JSON.parse(response.body)
       created_ats = json_response.map { |msg| Time.parse(msg['created_at']) }
@@ -103,7 +103,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'creates a new message with session_id' do
-      post '/messages', params: valid_params
+      post '/api/messages', params: valid_params
 
       expect(response).to have_http_status(:created)
 
@@ -122,7 +122,7 @@ RSpec.describe 'Messages', type: :request do
 
     it 'creates message when no session_id cookie exists' do
       # Make a separate request without cookies
-      post '/messages', params: valid_params, headers: { 'Cookie' => '' }
+      post '/api/messages', params: valid_params, headers: { 'Cookie' => '' }
 
       expect(response).to have_http_status(:created)
 
@@ -146,7 +146,7 @@ RSpec.describe 'Messages', type: :request do
       end
 
       it 'returns unprocessable entity status' do
-        post '/messages', params: invalid_params
+        post '/api/messages', params: invalid_params
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -167,7 +167,7 @@ RSpec.describe 'Messages', type: :request do
       end
 
       it 'returns error details' do
-        post '/messages', params: valid_params
+        post '/api/messages', params: valid_params
 
         expect(response).to have_http_status(:unprocessable_entity)
         json_response = JSON.parse(response.body)
