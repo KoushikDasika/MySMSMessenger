@@ -5,14 +5,14 @@ on:
   push:
     branches: [ main ]
 
-defaults:
-  run:
-    shell: bash
-    working-directory: ./api
 
 jobs:
   scan_ruby:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./api
 
     steps:
       - name: Checkout code
@@ -23,12 +23,18 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+          working-directory: ./api
 
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
+        working-directory: ./api
 
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./api
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,6 +53,10 @@ jobs:
       contents: read
       id-token: write
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./api
     services:
       mongo:
         image: mongo:8.0
