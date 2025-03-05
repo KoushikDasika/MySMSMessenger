@@ -5,6 +5,11 @@ on:
   push:
     branches: [ main ]
 
+defaults:
+  run:
+    shell: bash
+    working-directory: ./api
+
 jobs:
   scan_ruby:
     runs-on: ubuntu-latest
@@ -20,7 +25,7 @@ jobs:
           bundler-cache: true
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        run: api/bin/brakeman --no-pager
+        run: bin/brakeman --no-pager
 
   lint:
     runs-on: ubuntu-latest
@@ -35,7 +40,7 @@ jobs:
           bundler-cache: true
 
       - name: Lint code for consistent style
-        run: api/bin/rubocop -f github
+        run: bin/rubocop -f github
 
   test:
     permissions:
@@ -74,7 +79,7 @@ jobs:
           RAILS_ENV: test
           RAILS_MASTER_KEY: ${{ secrets.RAILS_TEST_KEY }}
           TEST_DATABASE_URL: mongodb://test:password@localhost:27017/my_sms_messenger_test?directConnection=true&authSource=admin&authMechanism=SCRAM-SHA-1
-        run: api/bin/rails db:test:prepare && api/bin/bundle exec rspec
+        run: bin/rails db:test:prepare && bundle exec rspec
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
