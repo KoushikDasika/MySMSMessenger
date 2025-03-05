@@ -15,4 +15,3 @@ export class MessageService {
     return this.http.post('/api/messages', { message });
   }
 }
-

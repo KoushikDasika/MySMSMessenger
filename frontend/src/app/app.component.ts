@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MessageListComponent } from './message-list/message-list.component';
+import { MessageListComponent } from '@/app/message-list/message-list.component';
 
 @Component({
   selector: 'app-root',
