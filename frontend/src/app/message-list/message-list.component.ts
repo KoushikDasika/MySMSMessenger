@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from '@/app/core/message.service';
+import { MessageComponent } from '@/app/message/message.component';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MessageComponent],
   templateUrl: './message-list.component.html',
   styleUrl: './message-list.component.css'
 })
@@ -23,11 +24,10 @@ export class MessageListComponent implements OnInit {
   fetchMessages(): void {
     this.loading = true;
     this.error = null;
-    
+
     this.messageService.getMessages().subscribe({
       next: (response: any) => {
         this.messages = response;
-        console.log('Messages received:', this.messages);
         this.loading = false;
       },
       error: (err) => {
