@@ -56,7 +56,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./api
+        working-directory: api
     services:
       mongo:
         image: mongo:8.0
