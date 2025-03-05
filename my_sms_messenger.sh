@@ -41,6 +41,10 @@ function bash-frontend() {
   base_run frontend bash
 }
 
+function restart() {
+  docker compose restart "$@"
+}
+
 # Build the Docker image
 function build() {
   docker compose build
