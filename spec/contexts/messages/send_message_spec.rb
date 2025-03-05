@@ -4,7 +4,6 @@ RSpec.describe Messages::SendMessage do
   let(:to_number) { Faker::PhoneNumber.cell_phone_in_e164 }
   let(:from_number) { Faker::PhoneNumber.cell_phone_in_e164 }
   let(:message_body) { 'Test message' }
-  let(:session_id) { SecureRandom.uuid }
 
   before(:each) do
     @twilio_client = Twilio::REST::Client.new
@@ -16,7 +15,7 @@ RSpec.describe Messages::SendMessage do
 
   describe '#call' do
     context 'when creating message record with session' do
-      it 'creates a message with session_id' do
+      it 'creates a message with users' do
         sender = FactoryBot.create(:user)
         recipient = FactoryBot.create(:user)
 
@@ -24,7 +23,6 @@ RSpec.describe Messages::SendMessage do
           to: recipient.phone_number,
           from: sender.phone_number,
           body: message_body,
-          session_id: session_id
         )
 
         response = service.call
@@ -37,20 +35,6 @@ RSpec.describe Messages::SendMessage do
           'body' => message_body,
           'success' => false
         )
-      end
-
-      it 'creates or updates user with session_id' do
-        service = Messages::SendMessage.new(
-          to: to_number,
-          from: from_number,
-          body: message_body,
-          session_id: session_id
-        )
-
-        service.call
-
-        user = User.find_by(phone_number: from_number)
-        expect(user.session_id).to eq(session_id)
       end
     end
 
@@ -75,7 +59,6 @@ RSpec.describe Messages::SendMessage do
           to: to_number,
           from: from_number,
           body: message_body,
-          session_id: session_id
         )
 
         result = service.call
@@ -105,7 +88,6 @@ RSpec.describe Messages::SendMessage do
           to: to_number,
           from: from_number,
           body: message_body,
-          session_id: session_id
         )
 
         result = service.call
@@ -139,8 +121,6 @@ RSpec.describe Messages::SendMessage do
           to: to_number,
           from: from_number,
           body: message_body,
-          session_id: session_id
-
         )
 
         result = service.call
@@ -170,7 +150,6 @@ RSpec.describe Messages::SendMessage do
         to: to_number,
         from: from_number,
         body: message_body,
-        session_id: session_id
       )
 
       expect(@messages).to receive(:create).with(
@@ -199,7 +178,6 @@ RSpec.describe Messages::SendMessage do
         to: to_number,
         from: from_number,
         body: message_body,
-        session_id: session_id
       )
 
       result = service.call
@@ -241,16 +219,6 @@ RSpec.describe Messages::SendMessage do
         Messages::SendMessage.new(
           to: to_number,
           from: from_number
-        )
-      }.to raise_error(ArgumentError)
-    end
-
-    it 'raises error when session_id parameter is missing' do
-      expect {
-        Messages::SendMessage.new(
-          to: to_number,
-          from: from_number,
-          body: message_body
         )
       }.to raise_error(ArgumentError)
     end

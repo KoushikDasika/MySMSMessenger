@@ -8,9 +8,9 @@ class User
   index({ phone_number: 1 }, { unique: true })
 
   validates :phone_number, presence: true, uniqueness: true
-  
-  has_many :sent_messages, class_name: Message, inverse_of: :sender_id
-  has_many :received_messages, class_name: Message, inverse_of: :recipient_id
+
+  has_many :sent_messages, class_name: Message, inverse_of: :sender
+  has_many :received_messages, class_name: Message, inverse_of: :recipient
 
   def self.find_or_create_for_session(phone_number:, session_id:)
     user = User.find_or_create_by(phone_number: phone_number)

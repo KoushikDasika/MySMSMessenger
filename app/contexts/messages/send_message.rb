@@ -1,12 +1,11 @@
 module Messages
   class SendMessage
-    attr_accessor :to, :from, :body, :session_id, :sms_response, :message
+    attr_accessor :to, :from, :body, :sms_response, :message
 
-    def initialize(to:, from:, body:, session_id:)
+    def initialize(to:, from:, body:)
       @to = to
       @from = from
       @body = body
-      @session_id = session_id
     end
 
     def call
@@ -15,11 +14,11 @@ module Messages
       @message = update_message_with_sms_result(message, sms_response)
 
       SendMessageResponse.new(
-        success: true,
+        success: @sms_response.success,
         message: @message,
-        error_code: nil,
-        error_message: nil,
-        sms_response: sms_response
+        error_code: @sms_response.error_code,
+        error_message: @sms_response.error_message,
+        sms_response: @sms_response
       )
     rescue Mongoid::Errors::Validations => e
       handle_error("validation_error", e)
@@ -31,7 +30,7 @@ module Messages
 
     def create_message_with_users(to, from, body)
       recipient = User.find_or_create_by(phone_number: to)
-      sender = User.find_or_create_for_session(phone_number: from, session_id: @session_id)
+      sender = User.find_or_create_by(phone_number: from)
 
       Message.create!(
         to: to,

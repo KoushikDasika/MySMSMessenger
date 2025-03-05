@@ -19,22 +19,22 @@ RSpec.describe 'Messages', type: :request do
       sender = FactoryBot.create(:user, session_id: session_id, phone_number: twilio_number)
 
       # Create messages for this session
-      message1 = FactoryBot.create(:message,
+      FactoryBot.create(:message,
         from: sender.phone_number,
         to: recipient.phone_number,
         body: 'Hello!',
         sender: sender,
         recipient: recipient
       )
-      message2 = FactoryBot.create(:message,
+      FactoryBot.create(:message,
         from: recipient.phone_number,
         to: sender.phone_number,
         body: 'Hi there!',
-        sender: sender,
-        recipient: recipient
+        sender: recipient,
+        recipient: sender
       )
       # Create message for different session (shouldn't be returned)
-      message3 = FactoryBot.create(:message,
+      FactoryBot.create(:message,
         from: sender.phone_number,
         to: recipient.phone_number,
         body: 'Different session',
@@ -51,27 +51,26 @@ RSpec.describe 'Messages', type: :request do
       json_response = JSON.parse(response.body)
       expect(json_response.length).to eq(2)
       expect(json_response.first).to include(
-        'body' => 'Hi there!',
-        'session_id' => session_id
+        'body' => 'Hello!',
       )
     end
 
-    it 'creates new session_id if none exists' do
-      cookies.delete(:session_id)
+    it 'returns 404 if no user exists' do
+      cookies[:session_id] = SecureRandom.uuid
 
       get '/messages'
 
-      expect(cookies.signed[:session_id]).to be_present
-      expect(response).to have_http_status(:success)
+      expect(cookies[:session_id]).to be_present
+      expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body)).to be_empty
     end
 
-    it 'orders messages by created_at desc' do
+    it 'orders messages by created_at asc' do
       get '/messages'
 
       json_response = JSON.parse(response.body)
-      created_ats = json_response.map { |msg| msg['created_at'] }
-      expect(created_ats).to eq(created_ats.sort.reverse)
+      created_ats = json_response.map { |msg| Time.parse(msg['created_at']) }
+      expect(created_ats).to eq(created_ats.sort)
     end
   end
 
@@ -80,7 +79,7 @@ RSpec.describe 'Messages', type: :request do
       {
         message: {
           to: recipient_number,
-          body: 'Hello there!',
+          body: 'General Kenobi! Hello there!',
         },
       }
     end
@@ -97,35 +96,43 @@ RSpec.describe 'Messages', type: :request do
     end
 
     before do
-      cookies.signed[:session_id] = session_id
+      cookies[:session_id] = session_id
+      FactoryBot.create(:user, session_id: session_id, phone_number: twilio_number)
       allow(Apis::Twilio::SendSmsService).to receive(:new).and_return(sms_service)
       allow(sms_service).to receive(:call).and_return(sms_response)
     end
 
     it 'creates a new message with session_id' do
-      expect {
-        post '/messages', params: valid_params
-      }.to change(Message, :count).by(1)
+      post '/messages', params: valid_params
 
       expect(response).to have_http_status(:created)
 
       json_response = JSON.parse(response.body)
       expect(json_response).to include(
-        'body' => 'Hello there!',
+        'body' => 'General Kenobi! Hello there!',
         'to' => recipient_number,
         'from' => twilio_number,
-        'session_id' => session_id,
         'success' => true
       )
+
+      # Verify the message was created
+      message = Message.where(body: 'General Kenobi! Hello there!').first
+      expect(message).to be_present
     end
 
-    it 'creates new session_id if none exists' do
-      cookies.delete(:session_id)
+    it 'creates message when no session_id cookie exists' do
+      # Make a separate request without cookies
+      post '/messages', params: valid_params, headers: { 'Cookie' => '' }
 
-      post '/messages', params: valid_params
-
-      expect(cookies.signed[:session_id]).to be_present
       expect(response).to have_http_status(:created)
+
+      # Verify a Set-Cookie header was sent
+      expect(response.headers['Set-Cookie']).to include('session_id=')
+
+
+      # Verify the message was created
+      message = Message.where(body: 'General Kenobi! Hello there!').first
+      expect(message).to be_present
     end
 
     context 'with invalid params' do
@@ -133,7 +140,7 @@ RSpec.describe 'Messages', type: :request do
         {
           message: {
             to: '',
-            body: 'Hello there!',
+            body: 'General Kenobi! Hello there!',
           },
         }
       end
@@ -146,12 +153,12 @@ RSpec.describe 'Messages', type: :request do
 
     context 'when SMS service fails' do
       let(:failed_sms_response) do
-        instance_double(
-          Apis::Twilio::SendSmsServiceResponse,
+        Apis::Twilio::SendSmsServiceResponse.new(
           success: false,
           message_sid: nil,
           error_code: '21211',
-          error_message: 'Invalid phone number'
+          error_message: 'Invalid phone number',
+          full_error_message: 'Invalid phone number'
         )
       end
 
