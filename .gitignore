@@ -11,28 +11,30 @@
 /.env*
 
 # Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
+api/log/*
+api/tmp/*
+!/api/log/.keep
+!/api/tmp/.keep
 
 # Ignore pidfiles, but keep the directory.
-/tmp/pids/*
-!/tmp/pids/
-!/tmp/pids/.keep
+api/tmp/pids/*
+!/api/tmp/pids/
+!/api/tmp/pids/.keep
 
 # Ignore storage (uploaded files in development and any SQLite databases).
-/storage/*
-!/storage/.keep
-/tmp/storage/*
-!/tmp/storage/
-!/tmp/storage/.keep
+api/storage/*
+!/api/storage/.keep
+api/tmp/storage/*
+!/api/tmp/storage/
+!/api/tmp/storage/.keep
 
-/public/assets
+api/public/assets/*
+!/api/public/assets/.keep
 
 # Ignore master key for decrypting credentials and more.
-/config/master.key
+api/config/master.key
 mongo_data/
-/config/credentials/test.key
-
-/config/credentials/development.key
+api/config/credentials/test.key
+api/config/credentials/development.key
+tmp/
+*.keep

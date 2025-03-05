@@ -12,12 +12,12 @@ services:
       - "27017:27017"
     restart: always
 
-  web:
+  api:
     build:
       context: .
       dockerfile: docker/development/Dockerfile
     volumes:
-      - .:/app
+      - ./api:/app
     ports:
       - "3000:3000"
     environment:
