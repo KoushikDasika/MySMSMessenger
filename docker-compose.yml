@@ -11,6 +11,16 @@ services:
     ports:
       - "27017:27017"
     restart: always
+    
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/development/DockerfileFrontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "4200:4200"
+    restart: always
 
   api:
     build:

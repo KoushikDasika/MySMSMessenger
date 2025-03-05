@@ -32,6 +32,11 @@ function bash() {
   docker compose exec api bash
 }
 
+# Open a bash shell in the frontend container
+function bash-frontend() {
+  docker compose exec frontend bash
+}
+
 # Build the Docker image
 function build() {
   docker compose build

@@ -38,3 +38,6 @@ api/config/credentials/test.key
 api/config/credentials/development.key
 tmp/
 *.keep
+
+frontend/node_modules/
+frontend/dist/
