@@ -5,15 +5,14 @@
   </header>
 
   <!-- Two Column Layout -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 flex-1 pb-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 pb-4">
     <!-- Left Column Box -->
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-full overflow-auto">
-      <h2 class="text-xl font-semibold mb-4">Column 1</h2>
-      <p>Content for the first column goes here.</p>
+    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-full">
+      <app-message-form></app-message-form>
     </div>
 
     <!-- Right Column Box -->
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-full overflow-auto">
+    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-full">
       <app-message-list></app-message-list>
     </div>
   </div>
