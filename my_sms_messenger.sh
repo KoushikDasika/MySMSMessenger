@@ -2,39 +2,43 @@
 
 # Essential Rails Docker Compose Helper Functions
 
+function base_run() {
+  docker compose run --rm --entrypoint '' -it "$@"
+}
+
 # Run Rails server
 function rails() {
-  docker compose run --rm --service-ports api rails s -b 0.0.0.0
+  base_run api rails s -b 0.0.0.0
 }
 
 # Run Rails console
 function console() {
-  docker compose run --rm api rails c
+  base_run api rails c
 }
 
 # Run database migrations
 function migrate() {
-  docker compose run --rm api rails db:migrate
+  base_run api rails db:migrate
 }
 
 # Run tests
 function rspec() {
-  docker compose run --rm api bundle exec rspec "$@"
+  base_run api bundle exec rspec "$@"
 }
 
 # Run any command in the api container
 function run() {
-  docker compose run --rm -it api "$@"
+  base_run api "$@"
 }
 
 # Open a bash shell in the api container
 function bash() {
-  docker compose exec api bash
+  base_run api bash
 }
 
 # Open a bash shell in the frontend container
 function bash-frontend() {
-  docker compose exec frontend bash
+  base_run frontend bash
 }
 
 # Build the Docker image
