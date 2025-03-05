@@ -10,8 +10,13 @@
       <textarea id="message" [(ngModel)]="message.message" name="message" class="w-full p-2 border border-gray-300 rounded" rows="6" required></textarea>
     </div>
     <div class="flex justify-between">
-      <button type="button" class="bg-white text-black px-4 py-2 rounded-full" (click)="clearForm()">Clear</button>
-      <button type="submit" class="bg-black text-white px-4 py-2 rounded-full" [disabled]="!message.phoneNumber || !message.message" (click)="onSubmit()">Submit</button>      
+      <button type="button" class="bg-white text-black px-4 py-2 rounded-full" (click)="clearForm()" [disabled]="isSubmitting">Clear</button>
+      <button type="submit" class="bg-black text-white px-4 py-2 rounded-full" [disabled]="!isFormValid()">
+        <span *ngIf="!isSubmitting">Submit</span>
+        <span *ngIf="isSubmitting" class="flex items-center">
+          Sending...
+        </span>
+      </button>
     </div>
   </form>
 </div>

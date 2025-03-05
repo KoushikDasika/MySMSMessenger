@@ -13,6 +13,8 @@ export class MessageFormComponent {
     phoneNumber: '',
     message: ''
   };
+  
+  isSubmitting = false;
 
   clearForm() {
     this.message = {
@@ -21,7 +23,23 @@ export class MessageFormComponent {
     };
   }
 
+  isFormValid(): boolean {
+    return !!this.message.phoneNumber && !!this.message.message && !this.isSubmitting;
+  }
+
   onSubmit() {
+    if (!this.isFormValid()) {
+      return;
+    }
+    
+    this.isSubmitting = true;
     console.log('Message submitted:', this.message);
+    
+    // Simulate API call with timeout
+    setTimeout(() => {
+      // Handle successful submission
+      this.clearForm();
+      this.isSubmitting = false;
+    }, 1500); // 1.5 seconds delay to simulate network request
   }
 }
