@@ -30,7 +30,7 @@ module Apis
           message_sid: nil,
           error_code: error.code,
           error_message: error.error_message,
-          full_error_message: error.message
+          full_error_message: error.backtrace
         )
       rescue StandardError => e
         SendSmsServiceResponse.new(
@@ -38,7 +38,7 @@ module Apis
           message_sid: nil,
           error_code: nil,
           error_message: e.message,
-          full_error_message: nil
+          full_error_message: e.backtrace
         )
       end
 
