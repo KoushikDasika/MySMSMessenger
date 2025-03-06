@@ -84,7 +84,7 @@ I keep API services in a separate folder from other business logic services. Api
 - **Karma/Jasmine**: Uses Karma and Jasmine for frontend testing.
 
 ## Next Steps
-- Rather than have the user wait synchronously for the Twilio API, we could enqueue a background job with retries for the message. We would add a status to the message object. Initial sending will be pending.  When the API call in the job succeeds, the status can change to Sent.  Finally, when the acknowledgement comes in from the Twilio Webhook, the message can be updated with the status Delivered. There should be timestamp attributes for all of them.
+- Rather than have the user wait synchronously for the Twilio API, we could enqueue a background job with retries for the message. We would add a status to the message object. Initial sending will be pending.  When the API call in the job succeeds, the status can change to Sent.  Finally, when the acknowledgement comes in from the Twilio Webhook, the message can be updated with the status Delivered. There should be timestamp attributes for all of them.  This is also for managing api rate limits because we can control the api calls
 - Websocket or long polling connection with the api for messages so that the chat is more interactive. Potentially do a pubsub model if its a group chat with multiple users. Easy to implement presence features too if theres a channel.
 
 ## Deployment Instructions
