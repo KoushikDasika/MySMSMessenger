@@ -10,6 +10,4 @@ RUN apt update && apt install -y wget \
 
 RUN npm install
 
-RUN npm install -g @angular/cli
-
 CMD ["npm", "run", "start"]
