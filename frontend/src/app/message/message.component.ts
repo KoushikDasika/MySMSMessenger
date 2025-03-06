@@ -19,7 +19,6 @@ export class MessageComponent {
   }
   
   formatPhoneNumber(phoneNumber: string) {
-    console.log('phoneNumber', phoneNumber);
     const parsed = parsePhoneNumber(phoneNumber);
     const significantNumber = parsed.number?.significant;
     if (!significantNumber) {
