@@ -8,7 +8,7 @@ export class MessageService {
   constructor(private http: HttpClient) { }
   
   getMessages() {
-    return this.http.get('/api/messages');
+    return this.http.get('/api/messages', { withCredentials: true });
   }
 
   sendMessage({phoneNumber, messageBody}: {phoneNumber: string, messageBody: string}) {

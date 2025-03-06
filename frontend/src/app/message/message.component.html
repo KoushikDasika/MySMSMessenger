@@ -1,13 +1,15 @@
-<div class="flex flex-col">
+<div class="flex flex-col py-4">
   <div class="flex flex-row justify-between">
     <div class="text-gray-700 font-bold text-lg">{{ formatPhoneNumber(message.to) }}</div>
     <div class="text-gray-700">{{ formatSentAt(message.sent_at) }}</div>
   </div>
-  <div class="">
-    <textarea class="w-full p-2 border border-gray-300 rounded" rows="2" disabled>
+
+  <div class="flex flex-col">
+    <p class="w-full p-2 border border-gray-300 rounded-lg whitespace-normal break-words">
       {{ message.body }}
-    </textarea>
+    </p>
   </div>
+
   <div class="flex flex-row justify-end">
     <p class="text-gray-700 text-sm">{{ message.body.length }} / 250</p>
   </div>

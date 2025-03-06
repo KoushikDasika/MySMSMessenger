@@ -10,7 +10,6 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    if cookies[:session_id].nil?
       # hardcoding the phone number for testing/dev purposes
       # In the real world, you'd login and use the phone number from the user's profile
       # or throw an error if no phone number is found
@@ -19,8 +18,5 @@ class ApplicationController < ActionController::Base
         phone_number: "+15005550006",
         session_id: session_id
       )
-    else
-      User.where(session_id: session_id).first
-    end
   end
 end

@@ -1,32 +1,13 @@
-<div class="w-full h-full flex flex-col">
-  <h2 class="text-xl font-semibold mb-4">Message History ({{ messages.length }})</h2>
+<div class="h-full max-h-[70vh] flex flex-col mb-8 px-16">
+  <!-- Header or other fixed content -->
+  <div class="flex-none">
+    <h2 class="text-3xl font-bold">Message History ({{ messages.length }})</h2>
+  </div>
   
-  <!-- Loading state -->
-  <div *ngIf="loading" class="flex justify-center items-center flex-1">
-    <p class="text-gray-500">Loading messages...</p>
-  </div>
-
-  <!-- Error state -->
-  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-    <p>{{ error }}</p>
-    <button
-      (click)="fetchMessages()"
-      class="mt-2 bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm">
-      Try Again
-    </button>
-  </div>
-
-  <!-- Empty state -->
-  <div *ngIf="!loading && !error && messages.length === 0" class="flex justify-center items-center flex-1">
-    <p class="text-gray-500">No messages found.</p>
-  </div>
-
-  <!-- Messages list -->
-  <div *ngIf="!loading && messages.length > 0" class="flex-1 overflow-auto px-8 bor">
-    <ul class="space-y-2">
-      <li *ngFor="let message of messages" class="py-2">
-        <app-message [message]="message"></app-message>
-      </li>
-    </ul>
+  <!-- Scrollable list container -->
+  <div class="flex-grow overflow-y-scroll">
+    <div class="space-y-4">
+      <app-message *ngFor="let message of messages" [message]="message"></app-message>
+    </div>
   </div>
 </div>
