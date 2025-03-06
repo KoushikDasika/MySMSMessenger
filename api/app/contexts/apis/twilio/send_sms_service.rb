@@ -20,14 +20,10 @@ module Apis
         SendSmsServiceResponse.new(
           success: true,
           message_sid: response.sid,
-          error_code: nil,
-          error_message: nil,
-          full_error_message: nil
         )
       rescue ::Twilio::REST::RestError => error
         SendSmsServiceResponse.new(
           success: false,
-          message_sid: nil,
           error_code: error.code,
           error_message: error.error_message,
           full_error_message: error.backtrace
@@ -35,8 +31,6 @@ module Apis
       rescue StandardError => e
         SendSmsServiceResponse.new(
           success: false,
-          message_sid: nil,
-          error_code: nil,
           error_message: e.message,
           full_error_message: e.backtrace
         )
@@ -52,7 +46,7 @@ module Apis
       end
     end
 
-    class SendSmsServiceResponse < Data.define(:success, :message_sid, :error_code, :error_message, :full_error_message)
+    class SendSmsServiceResponse < Struct.new(:success, :message_sid, :error_code, :error_message, :full_error_message)
     end
   end
 end
