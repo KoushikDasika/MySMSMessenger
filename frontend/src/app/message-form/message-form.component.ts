@@ -8,7 +8,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-message-form',
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  providers: [MessageService],
   templateUrl: './message-form.component.html',
   styleUrl: './message-form.component.css',
   standalone: true
