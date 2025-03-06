@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from '@/app/core/message.service';
 import { MessageComponent } from '@/app/message/message.component';
+import { Subscription } from 'rxjs';
+import { MessageResponse } from '@/app/core/message.model';
 
 @Component({
   selector: 'app-message-list',
@@ -10,15 +12,29 @@ import { MessageComponent } from '@/app/message/message.component';
   templateUrl: './message-list.component.html',
   styleUrl: './message-list.component.css'
 })
-export class MessageListComponent implements OnInit {
-  messages: any[] = [];
+export class MessageListComponent implements OnInit, OnDestroy {
+  messages: MessageResponse[] = [];
   loading = false;
   error: string | null = null;
+  private messageSubscription: Subscription | null = null;
 
   constructor(private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.fetchMessages();
+    
+    // Subscribe to new messages
+    this.messageSubscription = this.messageService.newMessage$.subscribe(newMessage => {
+      // Add the new message to the messages array
+      this.messages = [newMessage, ...this.messages];
+    });
+  }
+  
+  ngOnDestroy(): void {
+    // Clean up subscription to prevent memory leaks
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
   }
 
   fetchMessages(): void {
@@ -26,7 +42,7 @@ export class MessageListComponent implements OnInit {
     this.error = null;
 
     this.messageService.getMessages().subscribe({
-      next: (response: any) => {
+      next: (response: MessageResponse[]) => {
         this.messages = response;
         this.loading = false;
       },

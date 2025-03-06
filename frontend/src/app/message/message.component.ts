@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DateTime } from 'luxon';
 import { parsePhoneNumber } from 'awesome-phonenumber'
+import { MessageResponse } from '@/app/core/message.model';
 
 @Component({
   selector: 'app-message',
@@ -10,7 +11,7 @@ import { parsePhoneNumber } from 'awesome-phonenumber'
   styleUrl: './message.component.css'
 })
 export class MessageComponent {
-  @Input() message: any;
+  @Input() message!: MessageResponse;
   
   formatSentAt(sentAt: string) {
     const dt = DateTime.fromISO(sentAt).setZone('UTC');

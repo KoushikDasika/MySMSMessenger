@@ -36,6 +36,7 @@ api/config/master.key
 mongo_data/
 api/config/credentials/test.key
 api/config/credentials/development.key
+api/config/credentials/production.key
 tmp/
 *.keep
 

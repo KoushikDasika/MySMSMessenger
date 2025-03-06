@@ -5,7 +5,7 @@ class MessagesController < ApplicationController
     if current_user.nil?
       @messages = []
     else
-      @messages = current_user.sent_messages.order(created_at: :asc)
+      @messages = current_user.sent_messages.order(created_at: :desc)
     end
 
     render :index, status: :ok
