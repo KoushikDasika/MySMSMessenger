@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MessageService } from './core/message.service';
-import { MessageListComponent } from './message-list/message-list.component';
-import { MessageFormComponent } from './message-form/message-form.component';
+import { MessageListComponent } from './messages/message-list/message-list.component';
+import { MessageFormComponent } from './messages/message-form/message-form.component';
 import { provideRouter } from '@angular/router';
 
 describe('AppComponent', () => {
