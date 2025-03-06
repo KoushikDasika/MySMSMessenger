@@ -35,7 +35,7 @@ export class MessageFormComponent {
     });
     
     // Initialize the AsYouType formatter
-    this.phoneNumberFormatter = getAsYouType();
+    this.phoneNumberFormatter = getAsYouType('US');
   }
 
   // Custom validator to check if phone number is valid E.164 format

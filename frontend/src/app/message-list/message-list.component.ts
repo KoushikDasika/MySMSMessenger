@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MessageService } from '@/app/core/message.service';
 import { MessageComponent } from '@/app/message/message.component';
 import { Subscription } from 'rxjs';
+import { MessageResponse } from '@/app/core/message.model';
 
 @Component({
   selector: 'app-message-list',
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
   styleUrl: './message-list.component.css'
 })
 export class MessageListComponent implements OnInit, OnDestroy {
-  messages: any[] = [];
+  messages: MessageResponse[] = [];
   loading = false;
   error: string | null = null;
   private messageSubscription: Subscription | null = null;
@@ -41,7 +42,7 @@ export class MessageListComponent implements OnInit, OnDestroy {
     this.error = null;
 
     this.messageService.getMessages().subscribe({
-      next: (response: any) => {
+      next: (response: MessageResponse[]) => {
         this.messages = response;
         this.loading = false;
       },

@@ -4,9 +4,7 @@ export interface MessageRequest {
 }
 
 export interface MessageResponse {
-  id: string;
-  phoneNumber: string;
-  messageBody: string;
-  status: 'sent' | 'delivered' | 'failed';
-  createdAt: string;
+  to: string;
+  body: string;
+  sent_at: string;
 }
