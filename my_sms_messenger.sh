@@ -57,7 +57,9 @@ function restart() {
 
 # Build the Docker image
 function build() {
-  docker compose build
+  docker compose build \
+         -f api/docker/production/Dockerfile \
+         -t my-sms-messenger-api:latest
 }
 
 # Handle command line arguments

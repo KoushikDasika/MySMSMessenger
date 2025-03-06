@@ -20,9 +20,7 @@ This README documents the steps necessary to get the application up and running.
 
 ## Development Environment
 This project uses Docker for the development environment. To set up the environment, 
-You will need to put the key files in the api/config/credentials folder in order for the server to work. Then run:
-
-run:
+You will need to put the key files `(development.key, test.key, production.key)` in the api/config/credentials folder in order for the server to work. Then run:
 
 ```bash
 docker-compose up
@@ -56,9 +54,6 @@ This project includes a helper script (`my_sms_messenger.sh`) that simplifies co
 
 ### General Commands
 ```bash
-# Build the Docker images
-./my_sms_messenger.sh build
-
 # Restart containers
 ./my_sms_messenger.sh restart [container_name]
 ```
