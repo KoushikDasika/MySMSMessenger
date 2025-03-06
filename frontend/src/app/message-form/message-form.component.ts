@@ -131,4 +131,46 @@ export class MessageFormComponent {
       });
     }
   }
+
+  get body() {
+    return this.messageForm.get('body');
+  }
+  
+  get phoneNumber() {
+    return this.messageForm.get('phoneNumber');
+  }
+  
+  clearForm() {
+    this.messageForm.reset();
+  }
+  
+  onSubmit() {
+    if (this.submitting) return;
+    
+    this.messageForm.markAllAsTouched();
+    
+    if (this.messageForm.valid) {
+      this.submitting = true;
+      
+      // Map form values to match the original structure
+      const messageData = {
+        phoneNumber: this.phoneNumber?.value,
+        messageBody: this.body?.value
+      };
+      
+      console.log('Form submitted:', messageData);
+      
+      this.messageService.sendMessage(messageData).subscribe({
+        next: (response) => {
+          console.log('Message sent successfully', response);
+          this.messageForm.reset();
+          this.submitting = false;
+        },
+        error: (error) => {
+          console.error('Error sending message', error);
+          this.submitting = false;
+        }
+      });
+    }
+  }
 }
