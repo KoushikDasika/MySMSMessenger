@@ -11,7 +11,7 @@ import { MessageResponse } from '@/app/core/message.model';
   styleUrl: './message.component.css'
 })
 export class MessageComponent {
-  @Input() message: MessageResponse;
+  @Input() message!: MessageResponse;
   
   formatSentAt(sentAt: string) {
     const dt = DateTime.fromISO(sentAt).setZone('UTC');
