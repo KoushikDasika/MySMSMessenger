@@ -3,24 +3,25 @@ import { MessageFormComponent } from './message-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from '../core/message.service';
 import { of, throwError } from 'rxjs';
+import { fakeAsync, tick, flush } from '@angular/core/testing';
 
 describe('MessageFormComponent', () => {
   let component: MessageFormComponent;
   let fixture: ComponentFixture<MessageFormComponent>;
-  let messageServiceSpy: jasmine.SpyObj<MessageService>;
+  let messageService: jasmine.SpyObj<MessageService>;
 
   beforeEach(async () => {
     // Create spy for MessageService
-    messageServiceSpy = jasmine.createSpyObj('MessageService', ['sendMessage']);
-    
+    const messageSpy = jasmine.createSpyObj('MessageService', ['sendMessage']);
+
     await TestBed.configureTestingModule({
       imports: [MessageFormComponent, ReactiveFormsModule],
       providers: [
-        { provide: MessageService, useValue: messageServiceSpy }
+        { provide: MessageService, useValue: messageSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
+    messageService = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
     fixture = TestBed.createComponent(MessageFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -90,7 +91,7 @@ describe('MessageFormComponent', () => {
   });
 
   it('should call messageService when form is submitted successfully', () => {
-    messageServiceSpy.sendMessage.and.returnValue(of({
+    messageService.sendMessage.and.returnValue(of({
       to: '+12025550123',
       body: 'Test message',
       sent_at: '2023-01-01T00:00:00Z'
@@ -103,7 +104,7 @@ describe('MessageFormComponent', () => {
     
     component.onSubmit();
     
-    expect(messageServiceSpy.sendMessage).toHaveBeenCalledWith({
+    expect(messageService.sendMessage).toHaveBeenCalledWith({
       phoneNumber: '+12025550123',
       messageBody: 'Test message'
     });
@@ -116,7 +117,7 @@ describe('MessageFormComponent', () => {
   });
 
   it('should handle errors when message submission fails', () => {
-    messageServiceSpy.sendMessage.and.returnValue(throwError(() => new Error('Test error')));
+    messageService.sendMessage.and.returnValue(throwError(() => new Error('Test error')));
     
     component.messageForm.setValue({
       body: 'Test message',
@@ -125,7 +126,7 @@ describe('MessageFormComponent', () => {
     
     component.onSubmit();
     
-    expect(messageServiceSpy.sendMessage).toHaveBeenCalled();
+    expect(messageService.sendMessage).toHaveBeenCalled();
     expect(component.submitting).toBeFalse();
     // Form should not be reset on error
     expect(component.messageForm.value).toEqual({
@@ -133,4 +134,116 @@ describe('MessageFormComponent', () => {
       phoneNumber: '+12025550123'
     });
   });
+
+  it('should display success message when message is sent successfully', () => {
+    // Set up form with valid values
+    component.messageForm.setValue({
+      body: 'Test message',
+      phoneNumber: '+12025550123'
+    });
+
+    // Mock successful response
+    messageService.sendMessage.and.returnValue(of({
+      to: '+12025550123',
+      body: 'Test message',
+      sent_at: '2023-01-01T00:00:00Z'
+    }));
+
+    // Submit form
+    component.onSubmit();
+    fixture.detectChanges();
+
+    // Check that success message is displayed
+    expect(component.showSuccess).toBeTrue();
+    expect(component.successMessage).toBe('Message sent successfully!');
+    expect(component.showError).toBeFalse();
+  });
+
+  it('should display error message when message sending fails', () => {
+    // Set up form with valid values
+    component.messageForm.setValue({
+      body: 'Test message',
+      phoneNumber: '+12025550123'
+    });
+
+    // Mock error response
+    const errorResponse = { 
+      error: { message: 'Server error occurred' } 
+    };
+    messageService.sendMessage.and.returnValue(throwError(() => errorResponse));
+
+    // Submit form
+    component.onSubmit();
+    fixture.detectChanges();
+
+    // Check that error message is displayed
+    expect(component.showError).toBeTrue();
+    expect(component.errorMessage).toBe('Failed to send message. Please try again.');
+    expect(component.showSuccess).toBeFalse();
+  });
+
+  it('should display generic error message when error has no message', () => {
+    // Set up form with valid values
+    component.messageForm.setValue({
+      body: 'Test message',
+      phoneNumber: '+12025550123'
+    });
+
+    // Mock error response without specific message
+    messageService.sendMessage.and.returnValue(throwError(() => new Error()));
+
+    // Submit form
+    component.onSubmit();
+    fixture.detectChanges();
+
+    // Check that generic error message is displayed
+    expect(component.showError).toBeTrue();
+    expect(component.errorMessage).toBe('Failed to send message. Please try again.');
+    expect(component.showSuccess).toBeFalse();
+  });
+
+  it('should clear feedback messages when form is cleared', () => {
+    // Set error state
+    component.showError = true;
+    component.errorMessage = 'Test error';
+
+    // Clear form
+    component.clearForm();
+
+    // Check that messages are cleared
+    expect(component.showError).toBeFalse();
+    expect(component.errorMessage).toBe('');
+    expect(component.showSuccess).toBeFalse();
+    expect(component.successMessage).toBe('');
+  });
+
+  it('should hide success message after timeout', fakeAsync(() => {
+    // Set up form with valid values
+    component.messageForm.setValue({
+      body: 'Test message',
+      phoneNumber: '+12025550123'
+    });
+
+    // Mock successful response
+    messageService.sendMessage.and.returnValue(of({
+      to: '+12025550123',
+      body: 'Test message',
+      sent_at: '2023-01-01T00:00:00Z'
+    }));
+
+    // Submit form - this will trigger the actual setTimeout in the component
+    component.onSubmit();
+
+    // Verify success message is shown
+    expect(component.showSuccess).toBeTrue();
+
+    // Fast-forward time to trigger the timeout
+    tick(5000);
+
+    // Check that success message is hidden
+    expect(component.showSuccess).toBeFalse();
+
+    // Clean up any pending timers
+    flush();
+  }));
 });

@@ -18,6 +18,12 @@ export class MessageFormComponent {
   readonly MAX_LENGTH = 250;
   submitting = false;
   phoneNumberFormatter: AsYouType;
+  
+  // Add feedback properties
+  successMessage = '';
+  errorMessage = '';
+  showSuccess = false;
+  showError = false;
 
   constructor(
     private fb: FormBuilder,
@@ -100,12 +106,23 @@ export class MessageFormComponent {
   
   clearForm() {
     this.messageForm.reset();
+    // Clear any feedback messages
+    this.resetMessages();
+  }
+  
+  // Helper method to reset feedback messages
+  resetMessages() {
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.showSuccess = false;
+    this.showError = false;
   }
   
   onSubmit() {
     if (this.submitting) return;
     
     this.messageForm.markAllAsTouched();
+    this.resetMessages();
     
     if (this.messageForm.valid) {
       this.submitting = true;
@@ -123,10 +140,23 @@ export class MessageFormComponent {
           console.log('Message sent successfully', response);
           this.messageForm.reset();
           this.submitting = false;
+          
+          // Show success message
+          this.successMessage = 'Message sent successfully!';
+          this.showSuccess = true;
+          
+          // Auto-hide success message after 5 seconds
+          setTimeout(() => {
+            this.showSuccess = false;
+          }, 5000);
         },
         error: (error) => {
           console.error('Error sending message', error);
           this.submitting = false;
+          
+          // Show error message
+          this.errorMessage = 'Failed to send message. Please try again.';
+          this.showError = true;
         }
       });
     }
