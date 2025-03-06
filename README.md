@@ -56,9 +56,6 @@ This project includes a helper script (`my_sms_messenger.sh`) that simplifies co
 
 ### General Commands
 ```bash
-# Build the Docker images
-./my_sms_messenger.sh build
-
 # Restart containers
 ./my_sms_messenger.sh restart [container_name]
 ```
