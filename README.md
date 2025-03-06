@@ -2,8 +2,12 @@
 
 This README documents the steps necessary to get the application up and running.
 
-## Ruby Version
-* 3.4.2
+## Versions
+* Ruby 3.4.2
+* Ruby on Rails 8.0.1
+* Mongo 8
+* Angular 19
+* NodeJS 22
 
 ## System Dependencies
 * Docker Compose for Development
