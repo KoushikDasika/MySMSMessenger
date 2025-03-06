@@ -1,51 +1,44 @@
 <div class="flex flex-col px-16">
   <h2 class="text-3xl font-bold mb-4">New Message</h2>
   <form [formGroup]="messageForm" (ngSubmit)="onSubmit()">
-    <div class="mb-4">
-      <label for="phoneNumber" class="block mb-2">Phone Number</label>
+    <div class="form-group">
+      <label for="phoneNumber">Phone Number (E.164 format)</label>
       <input 
-        type="text" 
+        type="tel" 
         id="phoneNumber" 
         formControlName="phoneNumber" 
-        class="w-full p-2 border border-gray-300 rounded" 
-        [ngClass]="{'border-red-500': phoneNumber?.errors && phoneNumber?.touched}">
-      <p class="text-red-500 text-sm mt-1" *ngIf="phoneNumber?.errors?.['required'] && phoneNumber?.touched">
-        Phone number is required
-      </p>
+        class="form-control"
+        placeholder="+1234567890"
+        (input)="formatPhoneNumber($event)"
+      >
+      <div *ngIf="phoneNumber?.invalid && (phoneNumber?.dirty || phoneNumber?.touched)" class="error-message">
+        <div *ngIf="phoneNumber?.errors?.['required']">Phone number is required.</div>
+        <div *ngIf="phoneNumber?.errors?.['invalidPhoneNumber']">Please enter a valid phone number.</div>
+        <div *ngIf="phoneNumber?.errors?.['notE164Format']">Phone number must be in E.164 format (e.g., +1234567890).</div>
+      </div>
+      <small class="form-text text-muted">Enter phone number in international format (e.g., +1234567890)</small>
     </div>
-    <div class="">
-      <label for="body" class="block mb-2">Message</label>
+    
+    <div class="form-group">
+      <label for="body">Message</label>
       <textarea 
         id="body" 
         formControlName="body" 
-        class="w-full p-2 border border-gray-300 rounded" 
-        rows="6"
-        maxlength="{{ MAX_LENGTH }}"
-        [ngClass]="{'border-red-500': body?.errors && body?.touched}">
-      </textarea>
-      <p class="text-red-500 text-sm mt-1" *ngIf="body?.errors?.['required'] && body?.touched">
-        Message is required
-      </p>
+        class="form-control"
+        rows="4"
+        placeholder="Type your message here..."
+      ></textarea>
+      <div *ngIf="body?.invalid && (body?.dirty || body?.touched)" class="error-message">
+        <div *ngIf="body?.errors?.['required']">Message is required.</div>
+        <div *ngIf="body?.errors?.['maxlength']">Message cannot exceed {{MAX_LENGTH}} characters.</div>
+      </div>
+      <small class="form-text text-muted">{{body?.value?.length || 0}}/{{MAX_LENGTH}}</small>
     </div>
-    <div class="flex flex-row justify-end mb-8">
-      <p class="text-gray-700 text-sm">{{ body?.value?.length || 0 }} / {{ MAX_LENGTH }}</p>
-    </div>
-    <div class="flex justify-between">
-      <button 
-        type="button" 
-        class="bg-white text-black px-4 py-2 rounded-full border border-gray-300" 
-        (click)="clearForm()" 
-        [disabled]="submitting">
-        Clear
-      </button>
-      <button 
-        type="submit" 
-        class="bg-black text-white px-4 py-2 rounded-full" 
-        [disabled]="messageForm.invalid || submitting">
-        <span *ngIf="!submitting">Submit</span>
-        <span *ngIf="submitting" class="flex items-center">
-          Sending...
-        </span>
+    
+    <div class="form-actions">
+      <button type="button" (click)="clearForm()" class="btn btn-secondary">Clear</button>
+      <button type="submit" [disabled]="messageForm.invalid || submitting" class="btn btn-primary">
+        {{submitting ? 'Sending...' : 'Send Message'}}
       </button>
     </div>
   </form>
