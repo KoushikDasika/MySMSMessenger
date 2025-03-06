@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DateTime } from 'luxon';
+import { parsePhoneNumber } from 'awesome-phonenumber'
 
 @Component({
   selector: 'app-message',
@@ -14,5 +15,17 @@ export class MessageComponent {
   formatSentAt(sentAt: string) {
     const dt = DateTime.fromISO(sentAt).setZone('UTC');
     return dt.toFormat('EEEE, dd-MMM-yyyy HH:mm:ss \'UTC\'');
+  }
+  
+  formatPhoneNumber(phoneNumber: string) {
+    const parsed = parsePhoneNumber(phoneNumber);
+    const significantNumber = parsed.number?.significant;
+    if (!significantNumber) {
+      return phoneNumber;
+    }
+    const areaCode = significantNumber.slice(0, 3);
+    const prefix = significantNumber.slice(3, 6);
+    const lineNumber = significantNumber.slice(6);
+    return `${areaCode}-${prefix}-${lineNumber}`;
   }
 }
