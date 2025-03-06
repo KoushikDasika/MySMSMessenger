@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MessageFormComponent } from './message-form.component';
+import { MessageFormComponent } from '@/app/messages/message-form/message-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MessageService } from '../../core/message.service';
+import { MessageService } from '@/app/core/message.service';
 import { of, throwError } from 'rxjs';
 import { fakeAsync, tick, flush } from '@angular/core/testing';
 
