@@ -218,12 +218,27 @@ describe('MessageFormComponent', () => {
   });
 
   it('should hide success message after timeout', fakeAsync(() => {
-    // Set success state
-    component.successMessage = 'Message sent successfully!';
-    component.showSuccess = true;
+    // Set up form with valid values
+    component.messageForm.setValue({
+      body: 'Test message',
+      phoneNumber: '+12025550123'
+    });
 
-    // Trigger the timeout
-    tick(8000);
+    // Mock successful response
+    messageService.sendMessage.and.returnValue(of({
+      to: '+12025550123',
+      body: 'Test message',
+      sent_at: '2023-01-01T00:00:00Z'
+    }));
+
+    // Submit form - this will trigger the actual setTimeout in the component
+    component.onSubmit();
+
+    // Verify success message is shown
+    expect(component.showSuccess).toBeTrue();
+
+    // Fast-forward time to trigger the timeout
+    tick(5000);
 
     // Check that success message is hidden
     expect(component.showSuccess).toBeFalse();
