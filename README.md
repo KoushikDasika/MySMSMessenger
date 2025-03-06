@@ -14,7 +14,8 @@ This README documents the steps necessary to get the application up and running.
 
 ## Database Creation and Initialization
 ```bash
-bundle exec web rails db:setup
+./my_sms_messenger.sh run rails db:setup
+./my_sms_messenger.sh run rails db:test:prepare
 ```
 
 ## Development Environment
