@@ -1,12 +1,12 @@
 <div class="h-full max-h-[70vh] flex flex-col mb-8 px-16">
   <!-- Header or other fixed content -->
-  <div class="flex-none">
+  <div class="flex-none pb-4">
     <h2 class="text-3xl font-bold">Message History ({{ messages.length }})</h2>
   </div>
   
   <!-- Scrollable list container -->
-  <div class="flex-grow overflow-y-scroll">
-    <div class="space-y-4">
+  <div class="flex-grow overflow-y-auto">
+    <div class="">
       <app-message *ngFor="let message of messages" [message]="message"></app-message>
     </div>
   </div>
