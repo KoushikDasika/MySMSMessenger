@@ -33,6 +33,6 @@ module.exports = function (config) {
     },
     restartOnFileChange: true,
     singleRun: true,
-    logLevel: config.LOG_DEBUG  // Add this to get more detailed logs
+    // logLevel: config.LOG_DEBUG
   });
 };
