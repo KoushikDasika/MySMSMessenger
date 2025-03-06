@@ -8,7 +8,7 @@ import { of } from 'rxjs';
 describe('MessageListComponent', () => {
   let component: MessageListComponent;
   let fixture: ComponentFixture<MessageListComponent>;
-  let messageServiceSpy: jasmine.SpyObj<MessageService>;
+  //let messageServiceSpy: jasmine.SpyObj<MessageService>;
 
   beforeEach(async () => {
     const spy = jasmine.createSpyObj('MessageService', ['getMessages']);
@@ -29,7 +29,7 @@ describe('MessageListComponent', () => {
 
     fixture = TestBed.createComponent(MessageListComponent);
     component = fixture.componentInstance;
-    messageServiceSpy = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
+    //messageServiceSpy = TestBed.inject(MessageService) as jasmine.SpyObj<MessageService>;
     fixture.detectChanges();
   });
 
