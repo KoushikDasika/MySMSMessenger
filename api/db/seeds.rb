@@ -29,8 +29,6 @@ MESSAGES_PER_USER = 5
 users =
   NUM_USERS.times.map do |i|
     User.create(
-      name: Faker::Name.name,
-      email: Faker::Internet.email,
       phone_number: Faker::PhoneNumber.cell_phone_in_e164
     )
   end

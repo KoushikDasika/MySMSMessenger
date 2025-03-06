@@ -5,9 +5,12 @@
       <label for="phoneNumber" class="block mb-2">Phone Number</label>
       <input type="text" id="phoneNumber" [(ngModel)]="message.phoneNumber" name="phoneNumber" class="w-full p-2 border border-gray-300 rounded" required>
     </div>
-    <div class="mb-4">
+    <div class="">
       <label for="messageBody" class="block mb-2">Message</label>
       <textarea id="messageBody" [(ngModel)]="message.messageBody" name="messageBody" class="w-full p-2 border border-gray-300 rounded" rows="6" required></textarea>
+    </div>
+    <div class="flex flex-row justify-end mb-8">
+      <p class="text-gray-700 text-sm">{{ message.messageBody.length }} / 250</p>
     </div>
     <div class="flex justify-between">
       <button type="button" class="bg-white text-black px-4 py-2 rounded-full" (click)="clearForm()" [disabled]="isSubmitting">Clear</button>
