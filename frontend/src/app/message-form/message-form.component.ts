@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MessageService } from '../core/message.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-import { parsePhoneNumber, getAsYouType } from 'awesome-phonenumber';
+import { parsePhoneNumber, getAsYouType, AsYouType } from 'awesome-phonenumber';
 
 @Component({
   selector: 'app-message-form',
@@ -17,7 +17,7 @@ export class MessageFormComponent {
   messageForm: FormGroup;
   readonly MAX_LENGTH = 250;
   submitting = false;
-  phoneNumberFormatter: any;
+  phoneNumberFormatter: AsYouType;
 
   constructor(
     private fb: FormBuilder,
@@ -61,18 +61,10 @@ export class MessageFormComponent {
     
     return null;
   }
-
-  get body() {
-    return this.messageForm.get('body');
-  }
-  
-  get phoneNumber() {
-    return this.messageForm.get('phoneNumber');
-  }
   
   // Format phone number as user types
-  formatPhoneNumber(event: any) {
-    const input = event.target;
+  formatPhoneNumber(event: Event) {
+    const input = event.target as HTMLInputElement;
     const value = input.value;
     
     if (value) {
@@ -96,40 +88,6 @@ export class MessageFormComponent {
   normalizePhoneNumber(phoneNumberValue: string): string {
     const phoneNumber = parsePhoneNumber(phoneNumberValue);
     return phoneNumber.valid ? phoneNumber.number.e164 : phoneNumberValue;
-  }
-  
-  clearForm() {
-    this.messageForm.reset();
-  }
-  
-  onSubmit() {
-    if (this.submitting) return;
-    
-    this.messageForm.markAllAsTouched();
-    
-    if (this.messageForm.valid) {
-      this.submitting = true;
-      
-      // Map form values to match the original structure and normalize phone number
-      const messageData = {
-        phoneNumber: this.normalizePhoneNumber(this.phoneNumber?.value),
-        messageBody: this.body?.value
-      };
-      
-      console.log('Form submitted:', messageData);
-      
-      this.messageService.sendMessage(messageData).subscribe({
-        next: (response) => {
-          console.log('Message sent successfully', response);
-          this.messageForm.reset();
-          this.submitting = false;
-        },
-        error: (error) => {
-          console.error('Error sending message', error);
-          this.submitting = false;
-        }
-      });
-    }
   }
 
   get body() {
