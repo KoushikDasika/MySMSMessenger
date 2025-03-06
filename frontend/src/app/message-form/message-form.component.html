@@ -1,44 +1,62 @@
 <div class="flex flex-col px-16">
   <h2 class="text-3xl font-bold mb-4">New Message</h2>
   <form [formGroup]="messageForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="phoneNumber">Phone Number (E.164 format)</label>
+
+    <div class="form-group mb-4">
+      <label for="phoneNumber" class="block mb-2">Phone Number</label>
       <input 
-        type="tel" 
-        id="phoneNumber" 
-        formControlName="phoneNumber" 
-        class="form-control"
+        type="tel"
+        id="phoneNumber"
+        formControlName="phoneNumber"
+        class="form-control w-full p-2 border border-gray-300 rounded"
         placeholder="+1234567890"
         (input)="formatPhoneNumber($event)"
-      >
+        [ngClass]="{'border-red-500': phoneNumber?.errors && phoneNumber?.touched}">
       <div *ngIf="phoneNumber?.invalid && (phoneNumber?.dirty || phoneNumber?.touched)" class="error-message">
-        <div *ngIf="phoneNumber?.errors?.['required']">Phone number is required.</div>
-        <div *ngIf="phoneNumber?.errors?.['invalidPhoneNumber']">Please enter a valid phone number.</div>
-        <div *ngIf="phoneNumber?.errors?.['notE164Format']">Phone number must be in E.164 format (e.g., +1234567890).</div>
+        <p class="text-red-500 text-sm mt-1" *ngIf="phoneNumber?.errors?.['required']">Phone number is required.</p>
+        <p class="text-red-500 text-sm mt-1" *ngIf="phoneNumber?.errors?.['invalidPhoneNumber']">Please enter a valid phone number.</p>
+        <p class="text-red-500 text-sm mt-1" *ngIf="phoneNumber?.errors?.['notE164Format']">Phone number must be in E.164 format (e.g., +1234567890).</p>
       </div>
-      <small class="form-text text-muted">Enter phone number in international format (e.g., +1234567890)</small>
+      <small class="form-text text-muted text-gray-500 text-sm">Enter phone number in international format (e.g., +1234567890)</small>
     </div>
-    
-    <div class="form-group">
-      <label for="body">Message</label>
+
+    <div class="form-group mb-4">
+      <label for="body" class="block mb-2">Message</label>
       <textarea 
-        id="body" 
+        id="body"
         formControlName="body" 
-        class="form-control"
-        rows="4"
+        class="form-control w-full p-2 border border-gray-300 rounded"
+        rows="6"
         placeholder="Type your message here..."
-      ></textarea>
+        maxlength="{{ MAX_LENGTH }}"
+        [ngClass]="{'border-red-500': body?.errors && body?.touched}">
+      </textarea>
       <div *ngIf="body?.invalid && (body?.dirty || body?.touched)" class="error-message">
-        <div *ngIf="body?.errors?.['required']">Message is required.</div>
-        <div *ngIf="body?.errors?.['maxlength']">Message cannot exceed {{MAX_LENGTH}} characters.</div>
+        <p class="text-red-500 text-sm mt-1" *ngIf="body?.errors?.['required']">Message is required.</p>
+        <p class="text-red-500 text-sm mt-1" *ngIf="body?.errors?.['maxlength']">Message cannot exceed {{MAX_LENGTH}} characters.</p>
       </div>
-      <small class="form-text text-muted">{{body?.value?.length || 0}}/{{MAX_LENGTH}}</small>
     </div>
-    
-    <div class="form-actions">
-      <button type="button" (click)="clearForm()" class="btn btn-secondary">Clear</button>
-      <button type="submit" [disabled]="messageForm.invalid || submitting" class="btn btn-primary">
-        {{submitting ? 'Sending...' : 'Send Message'}}
+
+    <div class="flex flex-row justify-end mb-4">
+      <p class="text-gray-700 text-sm">{{ body?.value?.length || 0 }} / {{ MAX_LENGTH }}</p>
+    </div>
+
+    <div class="form-actions flex justify-between">
+      <button
+        type="button"
+        class="btn btn-secondary bg-white text-black px-4 py-2 rounded-full border border-gray-300"
+        (click)="clearForm()"
+        [disabled]="submitting">
+        Clear
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary bg-black text-white px-4 py-2 rounded-full"
+        [disabled]="messageForm.invalid || submitting">
+        <span *ngIf="!submitting">Send Message</span>
+        <span *ngIf="submitting" class="flex items-center">
+          Sending...
+        </span>
       </button>
     </div>
   </form>
