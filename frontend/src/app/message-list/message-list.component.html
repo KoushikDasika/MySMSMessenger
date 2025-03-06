@@ -22,9 +22,9 @@
   </div>
 
   <!-- Messages list -->
-  <div *ngIf="!loading && messages.length > 0" class="flex-1 overflow-auto">
+  <div *ngIf="!loading && messages.length > 0" class="flex-1 overflow-auto px-8 bor">
     <ul class="space-y-2">
-      <li *ngFor="let message of messages" class="border-b border-gray-200 py-2">
+      <li *ngFor="let message of messages" class="py-2">
         <app-message [message]="message"></app-message>
       </li>
     </ul>

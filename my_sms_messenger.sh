@@ -31,6 +31,11 @@ function run() {
   base_run api "$@"
 }
 
+# Run any command in the frontend container
+function run-frontend() {
+  base_run frontend "$@"
+}
+
 # Open a bash shell in the api container
 function bash() {
   base_run api bash
