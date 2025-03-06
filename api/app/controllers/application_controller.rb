@@ -14,8 +14,7 @@ class ApplicationController < ActionController::Base
       # In the real world, you'd login and use the phone number from the user's profile
       # or throw an error if no phone number is found
       User.find_or_create_for_session(
-        #phone_number: Rails.application.credentials.twilio[:phone_number],
-        phone_number: "+15005550006",
+        phone_number: Rails.application.credentials.twilio[:phone_number],
         session_id: session_id
       )
   end
