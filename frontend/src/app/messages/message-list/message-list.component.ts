@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from '@/app/core/message.service';
-import { MessageComponent } from '@/app/message/message.component';
+import { MessageComponent } from '@/app/messages/message/message.component';
 import { Subscription } from 'rxjs';
 import { MessageResponse } from '@/app/core/message.model';
 

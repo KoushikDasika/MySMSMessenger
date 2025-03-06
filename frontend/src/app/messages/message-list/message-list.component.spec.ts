@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MessageListComponent } from './message-list.component';
-import { MessageService } from '../core/message.service';
-import { MessageComponent } from '../message/message.component';
+import { MessageListComponent } from '@/app/messages/message-list/message-list.component';
+import { MessageService } from '@/app/core/message.service';
+import { MessageComponent } from '@/app/messages/message/message.component';
 import { of } from 'rxjs';
 
 describe('MessageListComponent', () => {
