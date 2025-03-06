@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,12 @@ export class MessageService {
     return this.http.get('/api/messages');
   }
 
-  sendMessage(message: string) {
-    return this.http.post('/api/messages', { message });
+  sendMessage({phoneNumber, messageBody}: {phoneNumber: string, messageBody: string}) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    return this.http.post('/api/messages', { to: phoneNumber, body: messageBody }, { headers, withCredentials: true });
   }
 }
