@@ -49,7 +49,7 @@ This project includes a helper script (`my_sms_messenger.sh`) that simplifies co
 ./my_sms_messenger.sh run-frontend [command]
 
 # Open a bash shell in the frontend container
-./my_sms_messenger.sh bash-frontend
+./my_sms_messenger.sh run-frontend npm run test
 ```
 
 ### General Commands
@@ -63,6 +63,7 @@ To run the test suite, use the following command:
 
 ```bash
 ./my_sms_messenger.sh rspec
+./my_sms_messenger.sh bash-frontend 
 ```
 
 ## Tech Decisions
